@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<!-- 绑定dao接口 -->
+<mapper namespace="com.hgx.my_boke_eurekaclient.comment.dao.CommentDao">
+
+	<!-- 分页查询博客评论resultMap -->
+	<resultMap type="com.hgx.my_boke_api.comment.entity.CommentVo"
+		id="findPageForCommentListMap">
+		<id property="commentId" column="commentIdA" />
+		<result property="commentContent" column="commentContentA" />
+		<result property="commentUserId" column="commentUserIdA" />
+		<result property="commentTime" column="commentTimeA" />
+		<result property="commentUserNickname" column="commentUserNicknameA" />
+		<result property="commentUserUserPicture" column="commentUserUserPictureA" />
+		<result property="replyTotal" column="replyTotalA"/>
+		<collection property="replys"
+			ofType="com.hgx.my_boke_api.comment.entity.CommentVo" select="commentPageListSonSelect" column="commentIdA"/><!-- column对应column可以传多列 -->
+	</resultMap>
+	<!-- 查评论 -->
+	<select id="findPageForCommentList" parameterType="java.lang.String"
+		resultMap="findPageForCommentListMap">
+		select
+		a.comment_id commentIdA,
+		a.comment_content commentContentA,
+		a.comment_user_id commentUserIdA,
+		a.comment_time CommentTimeA,
+		a.reply_total replyTotalA,
+		IFNULL(u.nickname,'某位靓仔') commentUserNicknameA,
+		IFNULL(u.user_picture,'static/images/default_user_picture.jpg') commentUserUserPictureA
+		from boke_comment a left join user_info u on a.comment_user_id=u.user_id
+		<where>
+			a.boke_id=#{bokeId} and a.comment_type='0'
+		</where>
+		order by a.comment_time desc
+	</select>
+	
+	<resultMap type="com.hgx.my_boke_api.comment.entity.CommentVo" id="replysMap">
+		<id property="commentId" column="commentIdB" />
+		<result property="commentContent" column="commentContentB" />
+		<result property="commentUserId" column="commentUserIdB" />
+		<result property="commentTime" column="commentTimeB" />
+		<result property="commentUserNickname" column="commentUserNicknameB" />
+		<result property="commentUserUserPicture" column="commentUserUserPictureB" />
+		<result property="parentCommentUserNickname" column="parentCommentUserNicknameB" />
+		<result property="parentCommentUserUserPicture" column="parentCommentUserUserPictureB" />
+	</resultMap>
+	<!-- 根据评论ID查评论子集,限制5条 -->
+	<select id="commentPageListSonSelect" resultMap="replysMap">
+		select 
+		b.comment_id commentIdB,
+		b.comment_content commentContentB,
+		b.comment_user_id commentUserIdB,
+		b.comment_time CommentTimeB,
+		IFNULL(u.nickname,'某位靓仔') commentUserNicknameB,
+		IFNULL(u.user_picture,'static/images/default_user_picture.jpg') commentUserUserPictureB,
+		IFNULL(u2.nickname,'某位靓仔') parentCommentUserNicknameB,
+		IFNULL(u2.user_picture,'static/images/default_user_picture.jpg') parentCommentUserUserPictureB
+		from boke_comment b left join user_info u on b.comment_user_id=u.user_id left join user_info u2 on b.parent_comment_user_id=u2.user_id
+		<where>
+			b.root_comment_id=#{commentId} and b.comment_type='1'
+		</where>
+		order by b.comment_time desc limit 5
+	</select>
+	
+	<!-- 保存评论 -->
+	<insert id="saveComment" parameterType="com.hgx.my_boke_api.comment.entity.CommentVo">
+		insert into boke_comment(
+			comment_id,
+			comment_content,
+			boke_id,
+			comment_user_id,
+			root_comment_id,
+			comment_type,
+			parent_comment_id,
+			parent_comment_user_id,
+			comment_time,
+			reply_total
+		)values(
+			#{commentId},#{commentContent},#{bokeId},#{commentUserId},#{rootCommentId},#{commentType},#{parentCommentId},#{parentCommentUserId},#{commentTime},#{replyTotal}
+		)
+		<!-- 顺便更改评论总数 -->
+		<if test="commentType=='1'.toString()">
+			; update boke_comment set reply_total = reply_total+1 where  comment_id=#{rootCommentId}
+		</if>
+	</insert>
+	
+	<!-- 统计博客评论数，用于分页  -->
+	<select id="countBokeCommentTotal" parameterType="java.lang.String" resultType="int">
+		select count(1) from boke_comment where boke_id=#{bokeId} and comment_type='0'
+	</select>
+	
+	<select id="findCommentByIdAndType" resultType="com.hgx.my_boke_api.comment.entity.CommentVo">
+		select
+		a.comment_id commentId,
+		a.comment_content commentContent,
+		a.comment_user_id commentUserId,
+		a.comment_time CommentTime,
+		a.boke_id bokeId,
+		a.reply_total replyTotal,
+		IFNULL(u.nickname,'某位靓仔') commentUserNickname,
+		IFNULL(u.user_picture,'static/images/default_user_picture.jpg') commentUserUserPicture
+		from boke_comment a left join user_info u on a.comment_user_id=u.user_id
+		<where>
+			a.comment_id=#{commentId} and a.comment_type=#{commentType}
+		</where>
+	</select>
+	
+	<!-- 查询评论的回复 -->
+	<select id="findPageForCommentReplys" parameterType="java.lang.String" resultType="com.hgx.my_boke_api.comment.entity.CommentVo">
+		select 
+		b.comment_id commentId,
+		b.comment_content commentContent,
+		b.comment_user_id commentUserId,
+		b.comment_time CommentTime,
+		IFNULL(u.nickname,'某位靓仔') commentUserNickname,
+		IFNULL(u.user_picture,'static/images/default_user_picture.jpg') commentUserUserPicture,
+		IFNULL(u2.nickname,'某位靓仔') parentCommentUserNickname,
+		IFNULL(u2.user_picture,'static/images/default_user_picture.jpg') parentCommentUserUserPicture
+		from boke_comment b left join user_info u on b.comment_user_id=u.user_id left join user_info u2 on b.parent_comment_user_id=u2.user_id
+			<where>
+			b.root_comment_id=#{rootCommentId} and b.comment_type='1' order by b.comment_time desc
+			</where>
+	</select>
+</mapper>

@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Implementation-Title: my_boke_api
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: hgx
+Implementation-Vendor-Id: com.hgx
+Build-Jdk: 1.8.0_191
+Implementation-URL: https://projects.spring.io/spring-boot/#/spring-bo
+ ot-starter-parent/hgxboke/my_boke_api
+Created-By: Maven Integration for Eclipse
+

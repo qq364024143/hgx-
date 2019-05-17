@@ -1,0 +1,10 @@
+eclipse.preferences.version=1
+encoding//src/main/java=UTF-8
+encoding//src/main/resources=UTF-8
+encoding//src/main/resources/application.properties=UTF-8
+encoding//src/main/resources/bootstrap_backup.properties=UTF-8
+encoding//src/main/webapp/WEB-INF/jsp/common_menu.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/jsp/fail.jsp=UTF-8
+encoding//src/main/webapp/WEB-INF/jsp/success.jsp=UTF-8
+encoding//src/test/java=UTF-8
+encoding/<project>=UTF-8

@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.hgx.my_boke_eurekaclient.boke.dao.BokeDao">
+
+	<!-- 查询出最新的15条博客 -->
+	<select id="findRecentBokes" resultType="com.hgx.my_boke_api.boke.entity.BokeVo">
+		SELECT
+		b.boke_id bokeId,
+		b.boke_title bokeTitle,
+		b.boke_descript bokeDescript,
+		b.boke_html_text bokeHtmlText,
+		left(b.boke_text,200) bokeText,
+		b.boke_create_time bokeCreateTime,
+		b.boke_update_time bokeUpdateTime,
+		b.boke_keyword bokeKeyword,
+		b.boke_class bokeClass,
+		c.class_name bokeClassName,
+		b.user_id userId,
+		b.nickname nickname
+		FROM
+		boke_detail b
+		INNER JOIN boke_class c ON b.boke_class = c.class_id
+		ORDER BY
+		b.boke_create_time DESC
+		LIMIT 15
+	</select>
+	
+	<!-- 查询推荐博客10条 -->
+	<select id="findRandomBokes" resultType="com.hgx.my_boke_api.boke.entity.BokeVo">
+		select
+		b.boke_id bokeId,
+		b.boke_title bokeTitle,
+		left(b.boke_text,100) bokeText 
+		from boke_detail b order by RAND() limit 10
+	</select>
+	
+	
+	<!-- 查询博客分类 -->
+	<select id="findBokeClasses" resultType="com.hgx.my_boke_api.boke.entity.BokeClassVo">
+		select
+		class_id classId,
+		class_name className
+		from boke_class order by class_id
+		
+	</select>
+	
+	<!-- 通过博客ID查询博客详情 -->
+	<select id="findBokeByBokeId" resultType="com.hgx.my_boke_api.boke.entity.BokeVo" parameterType="java.lang.String">
+		select 
+		boke_id bokeId,
+		boke_title bokeTitle,
+		boke_descript bokeDescript,
+		boke_html_text bokeHtmlText,
+		boke_text bokeText,
+		boke_create_time bokeCreateTime,
+		boke_update_time bokeUpdateTime,
+		boke_keyword bokeKeyword,
+		boke_class bokeClass,
+		user_id userId,
+		nickname nickname,
+		boke_nums bokeNums
+		from boke_detail 
+		where boke_id = #{bokeId} limit 1
+		
+	</select>
+	
+	<insert id="saveBoke" parameterType="com.hgx.my_boke_api.boke.entity.BokeVo" >
+		insert into boke_detail(
+			boke_id,
+			boke_title,
+			boke_descript,
+			boke_html_text,
+			boke_text,
+			boke_create_time,
+			boke_update_time,
+			boke_keyword,
+			boke_class,
+			user_id,
+			nickname,
+			boke_nums
+		) 
+		values
+		(
+		#{bokeId},#{bokeTitle},#{bokeDescript},#{bokeHtmlText},#{bokeText},#{bokeCreateTime},#{bokeUpdateTime},#{bokeKeyword},#{bokeClass},#{userId},#{nickname},
+		(select num from (SELECT (max(boke_nums) + 1) num FROM boke_detail ) nums)
+		)
+	</insert>
+	
+	<!-- 查询博客列表 -->
+	<!-- <select id="findBokes" parameterType="com.hgx.my_boke_api.boke.entity.BokeVo" resultType="com.hgx.my_boke_api.boke.entity.BokeVo">
+		SELECT
+		b.boke_id bokeId,
+		b.boke_title bokeTitle,
+		b.boke_descript bokeDescript,
+		b.boke_html_text bokeHtmlText,
+		<if test="bokeKeyword!=null and bokeKeyword!=''.toString()">
+		b.boke_text bokeText,
+		</if>
+		<if test="bokeKeyword==null or bokeKeyword==''.toString()">
+		left(b.boke_text,200) bokeText,
+		</if>
+		b.boke_create_time bokeCreateTime,
+		b.boke_update_time bokeUpdateTime,
+		b.boke_keyword bokeKeyword,
+		b.boke_class bokeClass,
+		c.class_name bokeClassName,
+		b.user_id userId,
+		b.nickname nickname
+		FROM
+		boke_detail b
+		INNER JOIN boke_class c ON b.boke_class = c.class_id
+		<where>
+			<if test="bokeClass!=null and bokeClass!=''.toString()">
+				and b.boke_class = #{bokeClass}
+			</if>
+			<if test="bokeKeyword!=null and bokeKeyword!=''.toString()">
+				and 
+				<foreach collection="IkSplitKeywords" item="key" separator="or">
+				 	b.boke_text like concat('%',#{key},'%')
+				</foreach>
+			</if>
+			<if test="bokeKeyword!=null and bokeKeyword!=''.toString()">
+				or 
+				<foreach collection="IkSplitKeywords" item="key" separator="or">
+				 	b.boke_title like concat('%',#{key},'%')
+				</foreach>
+			</if>
+		</where>
+		ORDER BY
+		b.boke_create_time DESC
+	</select> -->
+	
+	
+	<!-- 查询博客列表 -->
+	<select id="findBokes" parameterType="com.hgx.my_boke_api.boke.entity.BokeVo" resultType="com.hgx.my_boke_api.boke.entity.BokeVo">
+		SELECT
+		b.boke_id bokeId,
+		b.boke_title bokeTitle,
+		b.boke_descript bokeDescript,
+		b.boke_html_text bokeHtmlText,
+		<if test="bokeKeyword!=null and bokeKeyword!=''.toString()">
+		b.boke_text bokeText,
+		</if>
+		<if test="bokeKeyword==null or bokeKeyword==''.toString()">
+		left(b.boke_text,200) bokeText,
+		</if>
+		b.boke_create_time bokeCreateTime,
+		b.boke_update_time bokeUpdateTime,
+		b.boke_keyword bokeKeyword,
+		b.boke_class bokeClass,
+		c.class_name bokeClassName,
+		b.user_id userId,
+		b.nickname nickname
+		FROM
+		boke_detail b
+		INNER JOIN boke_class c ON b.boke_class = c.class_id
+		<where>
+			<if test="bokeClass!=null and bokeClass!=''.toString()">
+				and b.boke_class = #{bokeClass} order by b.boke_create_time desc
+			</if>
+			<if test="bokeKeyword!=null and bokeKeyword!=''.toString()">
+				and  MATCH (boke_title,boke_text)
+					AGAINST (#{mysqlFullTextIndexs} IN BOOLEAN MODE)<!-- mysql全文检索,默认按匹配度排序 -->
+			</if>
+		</where>
+		<if test="(bokeClass==null||bokeClass==''.toString()) and (bokeKeyword=null||bokeKeyword==''.toString())">
+				order by b.boke_create_time desc
+		</if>
+	</select>
+	
+	
+	<!-- 统计博客总数 -->
+	<!-- 查询博客列表 -->
+	<select id="countBokes" parameterType="com.hgx.my_boke_api.boke.entity.BokeVo" resultType="int">
+		SELECT
+		count(1)
+		FROM
+		boke_detail b
+		<where>
+			<if test="bokeClass!=null and bokeClass!=''.toString()">
+				and b.boke_class = #{bokeClass}
+			</if>
+			<if test="bokeKeyword!=null and bokeKeyword!=''.toString()">
+				and  MATCH (boke_title,boke_text)
+					AGAINST (#{mysqlFullTextIndexs} IN BOOLEAN MODE)<!-- mysql全文检索 -->
+			</if>
+		</where>
+	</select>
+	
+	<!-- 获取上一篇或下一篇 -->
+	<select id="getLastOrNextBoke" resultType="com.hgx.my_boke_api.boke.entity.BokeVo">
+		select 
+		boke_id bokeId,
+		boke_title bokeTitle
+		from
+		boke_detail
+		<where>
+			<if test="type=='last'.toString()">
+				boke_nums<![CDATA[<]]> #{bokeNums} order by boke_nums desc
+			</if>
+			<if test="type=='next'.toString()">
+				boke_nums>#{bokeNums} order by boke_nums asc
+			</if>
+		</where>
+		limit 1
+	</select>
+	
+	<!-- 统计收藏博客数 -->
+	<select id="countMarkBoke" parameterType="com.hgx.my_boke_api.boke.entity.MarkBokeVo" resultType="int">
+		select count(1) from boke_mark 
+		<where>
+			<if test="markDescript!=null and markDescript!=''.toString()">
+				and MATCH (mark_descript) AGAINST (#{mysqlFullTextIndexs} IN BOOLEAN MODE)<!-- mysql全文检索 -->
+			</if>
+		</where>
+	</select>
+	
+	<!-- 查询收藏博客列表 -->
+	<select id="findMarkBokes" parameterType="com.hgx.my_boke_api.boke.entity.MarkBokeVo" resultType="com.hgx.my_boke_api.boke.entity.MarkBokeVo">
+		select 
+			source_from sourceFrom,
+			net_address netAddress,
+			mark_descript markDescript,
+			mark_title markTitle
+		from boke_mark
+		<where>
+			<if test="markDescript!=null and markDescript!=''.toString()">
+				and MATCH (mark_descript) AGAINST (#{mysqlFullTextIndexs} IN BOOLEAN MODE)<!-- mysql全文检索 -->
+			</if>
+		</where>			
+	</select>
+	
+	<!-- 添加收藏博客 -->
+	<insert id="saveMarkBoke" parameterType="com.hgx.my_boke_api.boke.entity.MarkBokeVo">
+		insert into boke_mark(mark_id,source_from,net_address,mark_descript,mark_title,user_id)
+		values
+		(#{markId},#{sourceFrom},#{netAddress},#{markDescript},#{markTitle},#{userId})
+	</insert>
+	
+	<!-- 查询当前博客相关的10个博客，根据title。多个参数则不指定参数类型 -->
+	<select id="getRelateBokes" resultType="com.hgx.my_boke_api.boke.entity.BokeVo">
+		SELECT
+		b.boke_id bokeId,
+		b.boke_title bokeTitle,
+		b.boke_text bokeText
+		FROM
+		boke_detail b
+		<where>
+			b.boke_id!=#{bokeId} and MATCH (boke_title,boke_text) AGAINST (#{titles} IN BOOLEAN MODE)<!-- mysql全文检索 -->
+		</where>
+		limit 10
+	</select>
+</mapper>

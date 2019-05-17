@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Implementation-Title: my_boke_turbine Maven Webapp
+Implementation-Version: 0.0.1-SNAPSHOT
+Built-By: hgx
+Implementation-Vendor-Id: com.hgx
+Build-Jdk: 1.8.0_191
+Implementation-URL: http://www.example.com
+Created-By: Maven Integration for Eclipse
+
