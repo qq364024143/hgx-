@@ -246,14 +246,14 @@
 <script type="text/javascript">
 jQuery.noConflict();
 jQuery(function() { 
-    var elm = jQuery('#left_flow2'); 
+    /* var elm = jQuery('#left_flow2'); 
     var startPos = jQuery(elm).offset().top; 
     jQuery.event.add(window, "scroll", function() { 
         var p = jQuery(window).scrollTop(); 
         jQuery(elm).css('position',((p) > startPos) ? 'fixed' : ''); 
 
         jQuery(elm).css('top',((p) > startPos) ? '0' : '');
-    });
+    }); */
     //获取上一篇和下一篇博客
     getLastAndNextBoke();
 }); 

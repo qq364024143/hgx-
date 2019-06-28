@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.hgx</groupId>
 	<artifactId>hgxboke</artifactId>
@@ -17,14 +16,15 @@
 		<module>my_boke_turbine</module>
 		<module>my_boke_api</module>
 		<module>hgxboke_sso</module>
-	</modules>
+    <module>hgxboke_springboot_admin_server</module>
+  </modules>
 
 	<!-- 引入SpringBoot父类依赖 -->
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.0.5.RELEASE</version>
-		<relativePath /> <!-- lookup parent from repository -->
+		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<!--统一管理版本 -->
 	<properties>
@@ -50,8 +50,8 @@
 			<artifactId>spring-cloud-starter-netflix-eureka-server</artifactId>
 		</dependency>
 
-		<!-- Eclipse插件，对编码，发布，测试，以及debug等各个软件开发的生命周期提供支持，支持JSP,EJB等.使用注解@Getter/@Setter创建getter/setter 
-			@Data表示实体类 -->
+		<!-- Eclipse插件，对编码，发布，测试，以及debug等各个软件开发的生命周期提供支持，支持JSP,EJB�?.使用注解@Getter/@Setter创建getter/setter 
+			@Data表示实体�? -->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
@@ -63,8 +63,8 @@
 			<scope>test</scope>
 		</dependency>
 
-		<!-- Spring boot 热部�? : 此热部署会遇�? java.lang.ClassCastException 异常 -->
-		<!-- optional=true,依赖不会传�?�，该项目依赖devtools；之后依赖myboot项目的项目如果想要使用devtools，需要重新引�? -->
+		<!-- Spring boot 热部�?? : 此热部署会遇�?? java.lang.ClassCastException 异常 -->
+		<!-- optional=true,依赖不会传�?�，该项目依赖devtools；之后依赖myboot项目的项目如果想要使用devtools，需要重新引�?? -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
@@ -92,7 +92,7 @@
 		</dependency>
 	</dependencies>
 
-	<!--控制springcloud个组件版�? -->
+	<!--控制springcloud个组件版�?? -->
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
